@@ -1,4 +1,4 @@
-# Real Demo Video
+# AI Product Demo Video
 
 **Turn a working app into a client-ready walkthrough, using real product footage.**
 
@@ -14,7 +14,7 @@ The example comes from a real local Sprout Waves walkthrough. The application in
 
 Download or clone this repository, then give your coding agent this prompt:
 
-> Read `real-demo-video/SKILL.md`. Inspect my working application and create a short English client demo of the feature I specify. Record actual browser interactions, use the real backend for any model-powered behavior, add natural narration and synchronized captions, and export a 1080p MP4. Keep the recording scripts reusable and disclose sample data.
+> Read `SKILL.md` in this repository. Inspect my working application and create a short English client demo of the feature I specify. Record actual browser interactions, use the real backend for any model-powered behavior, add natural narration and synchronized captions, and export a 1080p MP4. Keep the recording scripts reusable and disclose sample data.
 
 Replace the path with wherever you saved the folder. Any agent with file/shell access and browser automation can follow the skill. Native skill discovery is optional. Use your agent's supported skill installation workflow; see the official [Codex](https://learn.chatgpt.com/docs/build-skills) and [Claude Code](https://code.claude.com/docs/en/skills) guides.
 
