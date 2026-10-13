@@ -2,6 +2,7 @@
 import argparse
 import json
 import math
+import os
 import shutil
 import subprocess
 import wave
@@ -10,6 +11,20 @@ from pathlib import Path
 
 def run(args, cwd=None):
     subprocess.run(args, cwd=cwd, check=True)
+
+
+def find_ffmpeg(explicit=None):
+    # Order: explicit flag, DEMO_FFMPEG, PATH, then the binary bundled with the optional imageio-ffmpeg package.
+    found=explicit or os.environ.get('DEMO_FFMPEG') or shutil.which('ffmpeg')
+    if not found:
+        try:
+            import imageio_ffmpeg
+            found=imageio_ffmpeg.get_ffmpeg_exe()
+        except Exception:
+            found=None
+    if not found:
+        raise SystemExit('FFmpeg is required. Install a build with H.264, AAC and the subtitles filter, set DEMO_FFMPEG, or pass --ffmpeg PATH.')
+    return found
 
 
 def stamp(seconds, ass=False):
@@ -32,12 +47,20 @@ WrapStyle: 0
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Caption,Arial,32,&H00FFFFFF,&H00FFFFFF,&H001B1824,&H001B1824,0,0,0,0,100,100,0,0,3,2,0,2,115,115,45,1
-Style: Title,Arial,25,&H00FFFFFF,&H00FFFFFF,&H001B1824,&H001B1824,0,0,0,0,100,100,0,0,3,2,0,7,38,38,28,1
+{styles}
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 '''
+
+# 'framed' shrinks the footage slightly so the scene title and captions sit in the margins and never cover the product.
+# 'full' keeps the footage edge to edge and draws both on top of it.
+LAYOUTS={
+    'framed':{'box':(1600,900,160,64),'styles':'''Style: Caption,Arial,31,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,2,160,160,28,1
+Style: Title,Arial,23,&H00C4B4A4,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,1,0,1,0,0,7,160,160,20,1'''},
+    'full':{'box':(1920,1080,0,0),'styles':'''Style: Caption,Arial,32,&H00FFFFFF,&H00FFFFFF,&H001B1824,&H001B1824,0,0,0,0,100,100,0,0,3,2,0,2,115,115,45,1
+Style: Title,Arial,25,&H00FFFFFF,&H00FFFFFF,&H001B1824,&H001B1824,0,0,0,0,100,100,0,0,3,2,0,7,38,38,28,1'''},
+}
 
 
 def main():
@@ -47,10 +70,15 @@ def main():
     parser.add_argument('--silent-preview',action='store_true')
     args=parser.parse_args()
     root=Path(args.project).resolve();build=root/'build';out=root/'exports';out.mkdir(exist_ok=True)
-    ffmpeg=args.ffmpeg or shutil.which('ffmpeg')
-    if not ffmpeg:
-        raise SystemExit('FFmpeg is required. Install a build with H.264, AAC and the subtitles filter, or pass --ffmpeg PATH.')
+    ffmpeg=find_ffmpeg(args.ffmpeg)
     plan=json.loads((root/'plan.json').read_text(encoding='utf-8'))
+    layout=LAYOUTS.get(plan.get('layout','framed'))
+    if not layout:
+        raise SystemExit('plan.json layout must be "framed" or "full".')
+    background=str(plan.get('background','0B0D12')).lstrip('#')
+    if len(background)!=6 or any(c not in '0123456789abcdefABCDEF' for c in background):
+        raise SystemExit('plan.json background must be a six-digit hex colour such as "0B0D12".')
+    width,height,left,top=layout['box'];header=ASS_HEADER.replace('{styles}',layout['styles'])
     recording=json.loads((build/'recording.json').read_text(encoding='utf-8'))
     if not recording.get('complete'):
         raise SystemExit('Recording is incomplete. Fix the scenario and record again.')
@@ -85,11 +113,14 @@ def main():
         for start,end,text in local_captions:
             events.append(f'Dialogue: 1,{stamp(start,True)},{stamp(end,True)},Caption,,0,0,0,,{escape_ass(text)}')
             captions.append((total+start,total+end,text))
-        ass=build/f'scene-{number}.ass';ass.write_text(ASS_HEADER+'\n'.join(events)+'\n',encoding='utf-8')
+        ass=build/f'scene-{number}.ass';ass.write_text(header+'\n'.join(events)+'\n',encoding='utf-8')
         part=build/f'scene-{number}.mp4'
         # A small lead-in protects against browser recorder initialization jitter.
         start=max(0,float(take['start'])-.15)
-        video_filter=f"scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=0x171823,setsar=1,tpad=stop_mode=clone:stop_duration={duration:.3f},subtitles=scene-{number}.ass"
+        frame=f"scale={width}:{height}:force_original_aspect_ratio=decrease:flags=lanczos,pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:color=0x{background}"
+        if (width,height)!=(1920,1080):
+            frame+=f",pad=1920:1080:{left}:{top}:color=0x{background},drawbox=x={left-1}:y={top-1}:w={width+2}:h={height+2}:color=white@0.14:t=1"
+        video_filter=f"{frame},setsar=1,tpad=stop_mode=clone:stop_duration={duration:.3f},subtitles=scene-{number}.ass"
         run([str(ffmpeg),'-hide_banner','-loglevel','error','-y','-ss',f'{start:.4f}','-t',str(take['duration']),'-i',str(raw),'-i',str(audio),'-vf',video_filter,'-t',f'{duration:.4f}','-r','30','-c:v','libx264','-preset','medium','-crf','20','-pix_fmt','yuv420p','-c:a','aac','-b:a','160k','-ar','48000','-movflags','+faststart',str(part)],cwd=build)
         parts.append(part);report.append({'id':scene['id'],'outputStart':total,'duration':duration,'captionCount':len(local_captions)});total+=duration
     concat=build/'concat.txt';concat.write_text(''.join(f"file 'scene-{i}.mp4'\n" for i in range(len(parts))),encoding='utf-8')
@@ -98,7 +129,7 @@ def main():
     srt='\n\n'.join(f'{i+1}\n{stamp(start)} --> {stamp(end)}\n{text}' for i,(start,end,text) in enumerate(captions))+'\n'
     (out/'captions.en.srt').write_text(srt,encoding='utf-8')
     (out/'narration.en.txt').write_text(' '.join(text for _,_,text in captions)+'\n',encoding='utf-8')
-    (out/'recording-report.json').write_text(json.dumps({'output':final.name,'resolution':[1920,1080],'duration':total,'narration':speech.get('source','silent preview'),'disclosures':plan.get('disclosures',[]),'scenes':report,'reviewRequired':'Watch output, check product claims and verify media streams before delivery.'},indent=2)+'\n',encoding='utf-8')
+    (out/'recording-report.json').write_text(json.dumps({'output':final.name,'resolution':[1920,1080],'layout':plan.get('layout','framed'),'duration':total,'narration':speech.get('source','silent preview'),'disclosures':plan.get('disclosures',[]),'scenes':report,'reviewRequired':'Watch output, check product claims and verify media streams before delivery.'},indent=2)+'\n',encoding='utf-8')
     print(f'Exported {final} ({total:.2f}s). Review before delivery.')
 
 

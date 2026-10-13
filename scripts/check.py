@@ -3,6 +3,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 import wave
@@ -45,6 +46,21 @@ class Helpers(unittest.TestCase):
         plan=json.loads((self.project/'plan.json').read_text(encoding='utf-8'))
         self.assertEqual(manifest['clips'][0]['text'],plan['scenes'][0]['sentences'][0])
         self.assertEqual((self.project/manifest['clips'][0]['file']).read_bytes(),(audio/'overview-0.wav').read_bytes())
+
+    @unittest.skipUnless(sys.platform in ('win32','darwin'),'Uses the voices that ship with Windows or macOS.')
+    def test_system_voice_narrates_offline_without_credentials(self):
+        result=subprocess.run([NODE,'speech.mjs','--system-voice'],cwd=self.project,env=self.env,capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stderr)
+        manifest=json.loads((self.project/'build/speech.json').read_text(encoding='utf-8'))
+        self.assertTrue(manifest['source'].startswith('system voice'))
+        self.assertGreater((self.project/manifest['clips'][0]['file']).stat().st_size,1000)
+
+    def test_preview_helper_ships_with_the_project_and_rejects_other_formats(self):
+        clip=self.base/'clip.mp4';clip.write_bytes(b'not a real video')
+        result=subprocess.run([sys.executable,'preview.py','--input',str(clip),'--out','preview.mp4'],cwd=self.project,capture_output=True,text=True)
+        self.assertNotEqual(result.returncode,0)
+        self.assertIn('.webp or .gif',result.stderr)
+        self.assertFalse((self.project/'preview.mp4').exists())
 
 
 if __name__=='__main__':unittest.main()
