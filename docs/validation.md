@@ -16,7 +16,9 @@ A Claude Code session read `SKILL.md` and produced the walkthrough at the top of
 - `compose.py --silent-preview` exported a labeled 36.9 s preview from the same recording.
 - Contact sheets and full-size frames were reviewed for each scene: titles and captions sit outside the footage, the pointer is visible including above a modal dialog, and narration matches what is on screen.
 
-What this round did not establish: nobody listened to the audio. Loudness was measured (mean −21.9 dB, peak −2.8 dB) and each clip's text matches its sentence by construction, but pronunciation and pacing of the system voice are unreviewed. No paid speech request was made.
+The narration was then regenerated through the configured speech route: `speech.mjs` with ElevenLabs Multilingual v2, voice Brian, on OpenRouter produced seven MP3 clips (about 490 characters in total), and `compose.py` rebuilt the video from the same recording. The published walkthrough is that version: 38.2 s, seven cues, decoding without errors. The system-voice export described above was the first pass and is no longer published.
+
+What this round did not establish: the assistant cannot hear. Loudness was measured (mean −26.0 dB, peak −4.5 dB for the published version) and each clip was generated from its caption sentence, but pronunciation and pacing rest on the owner's review.
 
 Problems found by running the skill as written, all addressed in this version:
 

@@ -6,15 +6,21 @@ A portable coding-agent skill for inspecting a feature, automating its real brow
 
 ![A narrated walkthrough produced by the bundled helpers](docs/media/kanban-demo.webp)
 
-[Download this walkthrough with sound (MP4, 42 s, 5 MB)](docs/media/kanban-demo.mp4?raw=true) · [A frame at full size](docs/media/kanban-demo.png) · [Read the skill](SKILL.md)
+**The full 38-second walkthrough, with narration:**
 
-The preview is silent; the sound is in the download. This is the unmodified output of the bundled helpers, recorded by Claude Code from a running app ([AI Coding Kanban](https://github.com/RJ1107/ai-coding-kanban)). The interactions are real: the pointer clicks real controls and the cards move because real commands reached the app during capture. The plan shown on the board is a fictional sample, and the narration is a synthetic system voice.
+https://github.com/user-attachments/assets/234c8a2b-ff6e-478c-a9eb-b6038a3657e9
+
+[Download the MP4](docs/media/kanban-demo.mp4?raw=true) · [A frame at full size](docs/media/kanban-demo.png) · [Read the skill](SKILL.md)
+
+Both are the unmodified output of the bundled helpers, recorded by Claude Code from a running app ([AI Coding Kanban](https://github.com/RJ1107/ai-coding-kanban)). The interactions are real: the pointer clicks real controls and the cards move because real commands reached the app during capture. The plan shown on the board is a fictional sample, and the narration is a synthetic voice (ElevenLabs Multilingual v2 through OpenRouter).
 
 ## A client case
 
 ![A real application walkthrough](docs/media/real-demo.gif)
 
-[Download the narrated excerpt (MP4, 2 MB)](docs/media/real-demo.mp4?raw=true) · [View a frame](docs/media/overview.png)
+https://github.com/user-attachments/assets/0556338b-22a5-49c7-a333-05e6e5083b6b
+
+[Download the MP4](docs/media/real-demo.mp4?raw=true) · [View a frame](docs/media/overview.png)
 
 An excerpt from a walkthrough of Sprout Waves, a journaling app, made with Codex. The application interactions and the model result were recorded from the running product, and the narration is a synthetic voice from OpenRouter's speech endpoint. Journal entries are fictional and sample history was prepared. This cut uses a custom split-screen layout rather than the default one. The repository contains the reusable skill, not the client's application source or credentials.
 
@@ -79,6 +85,6 @@ The agent still needs to understand your app and adapt the recording scene; this
 
 Without audio, `--silent-preview` can export a clearly labeled preview. It is not the requested narrated final. Keep `.env`, auth state, account databases and private logs out of the public delivery. Read [the review checklist](references/review.md) before sharing footage.
 
-Verified here: the original model-powered client walkthrough made with Codex; and a full run from Claude Code on Windows, from a fresh recording project through system-voice narration, pointer-led recording, captions, 1080p export and the README preview above. That run measured the audio track but nobody listened to it, so the system voice's pronunciation is unreviewed. macOS and Linux have not been run. See [validation notes](docs/validation.md).
+Verified here: the original model-powered client walkthrough made with Codex; and a full run from Claude Code on Windows, from a fresh recording project through narration (first with the system voice, then with a speech service), pointer-led recording, captions, 1080p export and the README preview above. The assistant measured the audio track but cannot hear it, so pronunciation rests on the owner's review. macOS and Linux have not been run. See [validation notes](docs/validation.md).
 
 Skill code is MIT licensed. Product footage is included as a disclosed workflow example.
