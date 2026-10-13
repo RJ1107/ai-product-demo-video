@@ -1,28 +1,22 @@
 # AI Product Demo Video
 
-**Turn a working app into a client-ready walkthrough, using real product footage.**
+**Let your coding agent show the client what you built. It operates the real app, narrates in clear English and hands you a video.**
 
-A portable coding-agent skill for inspecting a feature, automating its real browser flow, recording it, adding English narration and synchronized captions, and exporting a 1080p MP4 with reusable scripts.
+For the moments in a project when you owe a client an update and a video would do it better than a call:
 
-![A narrated walkthrough produced by the bundled helpers](docs/media/kanban-demo.webp)
+- **The client is not technical.** They need to watch the feature work, not read a changelog.
+- **You would rather not present live.** English may not be your first language, or explaining may not be your strength. The agent writes and voices the narration.
+- **You are short on time.** The agent clicks through the feature, records it, adds captions and exports the video while you keep building.
 
-**The full 38-second walkthrough, with narration:**
+![A client walkthrough recorded from the running app](docs/media/real-demo.gif)
 
-https://github.com/user-attachments/assets/234c8a2b-ff6e-478c-a9eb-b6038a3657e9
-
-[Download the MP4](docs/media/kanban-demo.mp4?raw=true) · [A frame at full size](docs/media/kanban-demo.png) · [Read the skill](SKILL.md)
-
-Both are the unmodified output of the bundled helpers, recorded by Claude Code from a running app ([AI Coding Kanban](https://github.com/RJ1107/ai-coding-kanban)). The interactions are real: the pointer clicks real controls and the cards move because real commands reached the app during capture. The plan shown on the board is a fictional sample, and the narration is a synthetic voice (ElevenLabs Multilingual v2 through OpenRouter).
-
-## A client case
-
-![A real application walkthrough](docs/media/real-demo.gif)
+**With narration (30 seconds):**
 
 https://github.com/user-attachments/assets/0556338b-22a5-49c7-a333-05e6e5083b6b
 
-[Download the MP4](docs/media/real-demo.mp4?raw=true) · [View a frame](docs/media/overview.png)
+[Download the MP4](docs/media/real-demo.mp4?raw=true) · [View a frame](docs/media/overview.png) · [Read the skill](SKILL.md)
 
-An excerpt from a walkthrough of Sprout Waves, a journaling app, made with Codex. The application interactions and the model result were recorded from the running product, and the narration is a synthetic voice from OpenRouter's speech endpoint. Journal entries are fictional and sample history was prepared. This cut uses a custom split-screen layout rather than the default one. The repository contains the reusable skill, not the client's application source or credentials.
+An excerpt from a walkthrough made for the client of Sprout Waves, a journaling app. The agent drove the running product in a browser, including a live request to the app's AI model, and the result on screen is what the model returned. The narration is a synthetic voice. Journal entries are fictional and sample history was prepared. This repository contains the reusable skill, not the client's application source or credentials.
 
 ## Try it with your agent
 
@@ -39,9 +33,19 @@ Replace the path with wherever you saved the folder. Any agent with file/shell a
 3. **Add the voice and captions.** Generate or import one audio clip per sentence; its measured duration sets the caption timing.
 4. **Export and review.** Assemble H.264/AAC video at 1920×1080, then check the footage, claims and subtitle readability.
 
-![An exported frame: scene title above, product footage, caption below](docs/media/kanban-demo.png)
+Generative AI helps write the story, narration and automation. It does not invent the product screen or substitute a fabricated model result. What the client sees is your real product.
 
-Generative AI helps write the story, narration and automation. It does not invent the product screen or substitute a fabricated model result.
+## Another example: the default look
+
+The client walkthrough above uses a custom split-screen design. This is what the bundled helpers produce with no design work: the footage framed, a scene title above it, captions below, and a pointer showing each click.
+
+![The default layout produced by the bundled helpers](docs/media/kanban-demo.webp)
+
+https://github.com/user-attachments/assets/234c8a2b-ff6e-478c-a9eb-b6038a3657e9
+
+[Download the MP4](docs/media/kanban-demo.mp4?raw=true) · [A frame at full size](docs/media/kanban-demo.png)
+
+Recorded by Claude Code from a different running app, a developer tool ([AI Coding Kanban](https://github.com/RJ1107/ai-coding-kanban)). The pointer clicks real controls, and the cards move because real commands reached the app during capture. The plan on the board is a fictional sample, and the narration is a synthetic voice (ElevenLabs Multilingual v2 through OpenRouter).
 
 ## Reusable helpers
 
@@ -85,6 +89,6 @@ The agent still needs to understand your app and adapt the recording scene; this
 
 Without audio, `--silent-preview` can export a clearly labeled preview. It is not the requested narrated final. Keep `.env`, auth state, account databases and private logs out of the public delivery. Read [the review checklist](references/review.md) before sharing footage.
 
-Verified here: the original model-powered client walkthrough made with Codex; and a full run from Claude Code on Windows, from a fresh recording project through narration (first with the system voice, then with a speech service), pointer-led recording, captions, 1080p export and the README preview above. The assistant measured the audio track but cannot hear it, so pronunciation rests on the owner's review. macOS and Linux have not been run. See [validation notes](docs/validation.md).
+Verified here: the original model-powered client walkthrough, made with Codex; and a full run from Claude Code on Windows, shown under "Another example", from a fresh recording project through narration (first with the system voice, then with a speech service), pointer-led recording, captions, 1080p export and the README preview. The assistant measured the audio track but cannot hear it, so pronunciation rests on the owner's review. macOS and Linux have not been run. See [validation notes](docs/validation.md).
 
 Skill code is MIT licensed. Product footage is included as a disclosed workflow example.
