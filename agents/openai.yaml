@@ -1,0 +1,4 @@
+interface:
+  display_name: "Real Demo Video"
+  short_description: "Record real product demos with narration and captions"
+  default_prompt: "Use $real-demo-video to create a truthful narrated walkthrough of my working app."

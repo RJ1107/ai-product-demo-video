@@ -1,0 +1,9 @@
+{
+  "title": "Product walkthrough",
+  "baseUrl": "http://127.0.0.1:3000",
+  "viewport": {"width": 1920, "height": 1080},
+  "disclosures": ["Replace this with an accurate description of the sample data and synthetic narration."],
+  "scenes": [
+    {"id": "overview", "title": "Product overview", "minSeconds": 6, "sentences": ["Write a sentence describing the behavior you actually verified."]}
+  ]
+}
