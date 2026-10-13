@@ -4,17 +4,17 @@
 
 A portable coding-agent skill for inspecting a feature, automating its real browser flow, recording it, adding English narration and synchronized captions, and exporting a 1080p MP4 with reusable scripts.
 
-[![A narrated walkthrough produced by the bundled helpers](docs/media/kanban-demo.webp)](docs/media/kanban-demo.mp4)
+![A narrated walkthrough produced by the bundled helpers](docs/media/kanban-demo.webp)
 
-[▶ Watch this walkthrough with sound (42 s)](docs/media/kanban-demo.mp4) · [A frame at full size](docs/media/kanban-demo.png) · [Read the skill](SKILL.md)
+[Download this walkthrough with sound (MP4, 42 s, 5 MB)](docs/media/kanban-demo.mp4?raw=true) · [A frame at full size](docs/media/kanban-demo.png) · [Read the skill](SKILL.md)
 
-This is the unmodified output of the bundled helpers, recorded by Claude Code from a running app ([AI Coding Kanban](https://github.com/RJ1107/ai-coding-kanban)). The interactions are real: the pointer clicks real controls and the cards move because real commands reached the app during capture. The plan shown on the board is a fictional sample, and the narration is a synthetic system voice.
+The preview is silent; the sound is in the download. This is the unmodified output of the bundled helpers, recorded by Claude Code from a running app ([AI Coding Kanban](https://github.com/RJ1107/ai-coding-kanban)). The interactions are real: the pointer clicks real controls and the cards move because real commands reached the app during capture. The plan shown on the board is a fictional sample, and the narration is a synthetic system voice.
 
 ## A client case
 
 ![A real application walkthrough](docs/media/real-demo.gif)
 
-[Watch the narrated excerpt](docs/media/real-demo.mp4) · [View a frame](docs/media/overview.png)
+[Download the narrated excerpt (MP4, 2 MB)](docs/media/real-demo.mp4?raw=true) · [View a frame](docs/media/overview.png)
 
 An excerpt from a walkthrough of Sprout Waves, a journaling app, made with Codex. The application interactions and the model result were recorded from the running product, and the narration is a synthetic voice from OpenRouter's speech endpoint. Journal entries are fictional and sample history was prepared. This cut uses a custom split-screen layout rather than the default one. The repository contains the reusable skill, not the client's application source or credentials.
 
