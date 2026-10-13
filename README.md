@@ -4,11 +4,19 @@
 
 A portable coding-agent skill for inspecting a feature, automating its real browser flow, recording it, adding English narration and synchronized captions, and exporting a 1080p MP4 with reusable scripts.
 
+[![A narrated walkthrough produced by the bundled helpers](docs/media/kanban-demo.webp)](docs/media/kanban-demo.mp4)
+
+[▶ Watch this walkthrough with sound (42 s)](docs/media/kanban-demo.mp4) · [A frame at full size](docs/media/kanban-demo.png) · [Read the skill](SKILL.md)
+
+This is the unmodified output of the bundled helpers, recorded by Claude Code from a running app ([AI Coding Kanban](https://github.com/RJ1107/ai-coding-kanban)). The interactions are real: the pointer clicks real controls and the cards move because real commands reached the app during capture. The plan shown on the board is a fictional sample, and the narration is a synthetic system voice.
+
+## A client case
+
 ![A real application walkthrough](docs/media/real-demo.gif)
 
-[Watch the narrated example](docs/media/real-demo.mp4) · [View a frame](docs/media/overview.png) · [Read the skill](SKILL.md)
+[Watch the narrated excerpt](docs/media/real-demo.mp4) · [View a frame](docs/media/overview.png)
 
-The example comes from a real local Sprout Waves walkthrough. The application interactions and model result were recorded from the running product. Journal entries are fictional, sample history was prepared, and the narration is synthetic. The repository contains the reusable skill, not the client's application source or credentials.
+An excerpt from a walkthrough of Sprout Waves, a journaling app, made with Codex. The application interactions and the model result were recorded from the running product, and the narration is a synthetic voice from OpenRouter's speech endpoint. Journal entries are fictional and sample history was prepared. This cut uses a custom split-screen layout rather than the default one. The repository contains the reusable skill, not the client's application source or credentials.
 
 ## Try it with your agent
 
@@ -21,17 +29,17 @@ Replace the path with wherever you saved the folder. Any agent with file/shell a
 ## How it works
 
 1. **Inspect the real feature.** Confirm startup, implementation and model connections before writing the story.
-2. **Write and record the walkthrough.** Adapt Playwright actions to the actual UI and verify the visible outcomes.
-3. **Add the voice and captions.** Generate or import one audio clip per sentence; measure its duration for caption timing.
+2. **Write and record the walkthrough.** Adapt Playwright actions to the actual UI and verify the visible outcomes. A pointer drawn in the page shows where each click lands.
+3. **Add the voice and captions.** Generate or import one audio clip per sentence; its measured duration sets the caption timing.
 4. **Export and review.** Assemble H.264/AAC video at 1920×1080, then check the footage, claims and subtitle readability.
 
-![An exported frame with English narration and captions](docs/media/overview.png)
+![An exported frame: scene title above, product footage, caption below](docs/media/kanban-demo.png)
 
 Generative AI helps write the story, narration and automation. It does not invent the product screen or substitute a fabricated model result.
 
 ## Reusable helpers
 
-Requirements: Node.js 22+, Python 3.10+, Playwright with a browser, and FFmpeg with H.264, AAC and subtitle support. Narration also needs an authorized TTS service or supplied audio clips. Existing tools can be reused; they do not have to be installed globally.
+Requirements: Node.js 22+, Python 3.10+, Playwright with a browser, and FFmpeg with H.264, AAC and subtitle support. Existing tools can be reused; they do not have to be installed globally.
 
 From this skill repository:
 
@@ -46,23 +54,24 @@ npm install
 npx playwright install chromium
 ```
 
-Adapt `plan.json` and `record.mjs` after inspecting your app. Copy `.env.example` to `.env` and configure a speech model, voice and key, or supply existing audio. Then run:
+Adapt `plan.json` and `record.mjs` after inspecting your app, choose a narration source, then record and compose:
 
 ```sh
-node speech.mjs
+node speech.mjs --system-voice
 node record.mjs
 python compose.py --project .
+python preview.py --project . --start 9 --duration 12
 ```
 
-To import narration instead of making a paid request:
+| Narration source | Command | Notes |
+| --- | --- | --- |
+| Speech service | `node speech.mjs` | Natural-sounding. Copy `.env.example` to `.env` and set a model, voice and key. A paid request on your account. The bundled helper uses [OpenRouter's speech endpoint](https://openrouter.ai/docs/guides/overview/multimodal/tts) |
+| System voice | `node speech.mjs --system-voice [NAME]` | Free and offline, using the voices shipped with Windows, macOS or Linux (`espeak-ng`). More mechanical; good for drafts |
+| Your own clips | `node speech.mjs --audio-dir "/path/to/clips"` | Files named `SCENE-ID-0.mp3`, `SCENE-ID-1.wav`, … in sentence order |
 
-```sh
-node speech.mjs --audio-dir "/path/to/audio-clips"
-```
+Output: the MP4, an English SRT, the plain narration, a recording report, and optionally a short silent animated WebP or GIF for a README. Captions follow measured sentence audio, not guessed reading speed. By default the footage is framed so the scene title and captions sit in the margins and never cover your product; `"layout": "full"` in `plan.json` switches to edge-to-edge footage. Interactions stay visible; a scene can hold its final frame while narration finishes. The helper does not provide word-level forced alignment.
 
-Name clips `SCENE-ID-0.mp3`, `SCENE-ID-1.wav`, etc., matching the plan's sentence order. See [the recording contract](references/recording.md). The bundled network helper uses [OpenRouter's speech endpoint](https://openrouter.ai/docs/guides/overview/multimodal/tts); choose a currently available model and voice in your own account. Other TTS services can supply the same per-sentence clips.
-
-Output includes the MP4, English SRT, plain narration and a recording report. Captions follow measured sentence audio, not guessed reading speed. Interactions stay visible; a scene can hold its final frame while narration finishes. The helper does not provide word-level forced alignment.
+See [the recording contract](references/recording.md) for every option, including tools that are not on PATH.
 
 ## What this does not promise
 
@@ -70,6 +79,6 @@ The agent still needs to understand your app and adapt the recording scene; this
 
 Without audio, `--silent-preview` can export a clearly labeled preview. It is not the requested narrated final. Keep `.env`, auth state, account databases and private logs out of the public delivery. Read [the review checklist](references/review.md) before sharing footage.
 
-Verified here: the original real model-powered client walkthrough, fresh capture through the generalized recorder, narration import, caption generation and 1080p export. No new paid TTS request was made while validating the generalized helper. See [validation notes](docs/validation.md).
+Verified here: the original model-powered client walkthrough made with Codex; and a full run from Claude Code on Windows, from a fresh recording project through system-voice narration, pointer-led recording, captions, 1080p export and the README preview above. That run measured the audio track but nobody listened to it, so the system voice's pronunciation is unreviewed. macOS and Linux have not been run. See [validation notes](docs/validation.md).
 
 Skill code is MIT licensed. Product footage is included as a disclosed workflow example.

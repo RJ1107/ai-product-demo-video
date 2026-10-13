@@ -1,22 +1,51 @@
 # Validation
 
-Validated on Windows with Node.js 24, Python 3.12, Chromium and FFmpeg 7.1 on 13 October 2026. The helpers target Node.js 22+ and Python 3.10+.
+Two rounds, both on Windows on 13 October 2026. The helpers target Node.js 22+ and Python 3.10+. macOS and Linux have not been run, including the `say` and `espeak-ng` branches of the system-voice option.
 
-## Real case
+## Round 2: full run from Claude Code
 
-The original Sprout Waves walkthrough used a real local application, a genuine model request for theme discovery, user acceptance of the returned suggestion, and actual manual theme creation. English synthetic narration and measured sentence captions were composed into a 1080p MP4. Fictional entries, prepared historical dates and accelerated typing were disclosed. Business source files were unchanged.
+Node.js 24, Python 3.13, Chromium 153 driven by Playwright 1.62.1, FFmpeg 7.1.
 
-The public excerpt shows theme discovery and acceptance from that recorded case. No client application source or credentials are included in this repository.
+A Claude Code session read `SKILL.md` and produced the walkthrough at the top of the README, of a running local app (AI Coding Kanban):
 
-## Generalized helpers
+- Initialized a fresh recording project with `init.mjs` and wrote four scenes with seven narration sentences.
+- `speech.mjs --system-voice "Microsoft Zira Desktop"` produced seven WAV clips offline, with no credentials configured.
+- `record.mjs` recorded at 1360×765 with the on-page pointer. Board changes in the footage were real commands run against the app during capture, and the script asserted on results: cards in their new columns, and clipboard contents after the copy button was clicked. No page errors were recorded.
+- `compose.py` exported 41.9 s of 1920×1080 H.264 with AAC audio in the framed layout and wrote seven SRT cues. The file decodes end to end without errors.
+- `preview.py` exported the animated WebP in the README (0.6 MB for 13 s at 960 px), and it was rendered in Chromium to confirm it plays.
+- `compose.py --silent-preview` exported a labeled 36.9 s preview from the same recording.
+- Contact sheets and full-size frames were reviewed for each scene: titles and captions sit outside the footage, the pointer is visible including above a modal dialog, and narration matches what is on screen.
 
-- Initialized a fresh recording project and adapted it to the actual live coding board.
-- Recorded real overview and card-detail interactions through `capture.mjs`.
-- Exported a clearly labeled 8.33-second silent preview with two captions.
-- Imported existing real narration clips and recomposed actual Sprout footage into a 25-second narrated video with four captions.
-- Independently checked H.264 video, AAC audio and 1920×1080 resolution; both exports fully decoded without errors.
-- Checked cue counts and caption bounds against the measured output timeline, and visually reviewed representative frames.
+What this round did not establish: nobody listened to the audio. Loudness was measured (mean −21.9 dB, peak −2.8 dB) and each clip's text matches its sentence by construction, but pronunciation and pacing of the system voice are unreviewed. No paid speech request was made.
 
-Three offline helper tests passed: refusing to overwrite an existing recording project, failing before a network request when speech configuration is incomplete without printing the supplied test key, and importing supplied audio with its matching plan sentence. Run `python scripts/check.py`; set `NODE_BINARY` if Node.js is not on PATH.
+Problems found by running the skill as written, all addressed in this version:
 
-No new paid TTS request was made during this generalized-helper validation. The original example used OpenRouter speech; new users must configure their own currently available model, voice and credentials or supply audio. The template still requires application-specific actions and visual/audio review. Recorder boundary timing may need adjustment; captions are sentence-aligned rather than word-aligned.
+- The scene title was drawn over the app's own header. The default layout now frames the footage; `"layout": "full"` restores the previous look.
+- Recordings had no cursor, so clicks appeared from nowhere. `capture.mjs` now draws a pointer and offers `pointer.click` and `pointer.move`.
+- FFmpeg was installed but not on PATH. `compose.py` now also checks `DEMO_FFMPEG` and the `imageio-ffmpeg` package.
+- `CHROMIUM_EXECUTABLE` alone was not enough to record: Playwright also needs its own video encoder. This is now documented.
+- There was no way to narrate without a paid key or pre-made clips. `--system-voice` was added.
+
+## Round 1: the original client case, with Codex
+
+Node.js 24, Python 3.12, Chromium, FFmpeg 7.1.
+
+The Sprout Waves walkthrough used a real local application, a genuine model request for theme discovery, user acceptance of the returned suggestion, and actual manual theme creation. English synthetic narration from OpenRouter's speech endpoint and measured sentence captions were composed into a 1080p MP4. Fictional entries, prepared historical dates and accelerated typing were disclosed. Business source files were unchanged. The public excerpt shows theme discovery and acceptance from that case; no client application source or credentials are included.
+
+The generalized helpers were then checked by recording a second app, exporting a silent preview, importing the existing narration clips and recomposing the Sprout footage into a 25-second narrated video, and independently confirming H.264, AAC and 1920×1080.
+
+## Offline tests
+
+`python scripts/check.py` runs five tests; set `NODE_BINARY` if Node.js is not on PATH:
+
+- Refusing to overwrite an existing recording project.
+- Failing before any network request when speech configuration is incomplete, without printing the supplied test key.
+- Importing supplied audio against its matching plan sentence.
+- Narrating with the system voice, offline and with no credentials (Windows and macOS only; skipped elsewhere).
+- Shipping `preview.py` with a new project and refusing an output format other than WebP or GIF.
+
+The tests do not need FFmpeg or a browser, so they do not cover recording, composing or preview encoding; those were exercised by the runs above.
+
+## Limits that remain
+
+The template still requires application-specific actions and a human review of picture and sound. Recorder boundary timing may need adjustment. Captions are sentence-aligned rather than word-aligned. New users must configure their own currently available speech model, voice and credentials, use a system voice, or supply audio.

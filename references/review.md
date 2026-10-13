@@ -5,4 +5,6 @@
 - Confirm visible product actions and outcomes match the narration. Watch the actual model response and user acceptance path. Do not claim automatic behavior that required an explicit user action.
 - Check prepared data is fictional and disclosed. Review every scene for account names, tokens, API keys, emails and private records. Authentication state files, private databases and local `.env` files do not belong in the delivery or public repository.
 - Keep repeatable scripts and explain how to run the application, generate/import narration, record and export. Do not bundle the user's entire proprietary app merely to share the skill.
+- Check that the scene title and captions do not cover the part of the product being shown, and that the pointer is visible wherever a click happens.
+- If nobody has listened to the narration, say so in the delivery note instead of describing how it sounds. Name the voice that was used.
 - Label synthesized narration and edited footage honestly. Distinguish silent previews from narrated finals. Missing services or credentials should remain visible limitations rather than fabricated success.

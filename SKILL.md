@@ -23,26 +23,35 @@ From this skill directory:
 node scripts/init.mjs --out "/path/to/project/demo-video"
 ```
 
-The output contains `plan.json`, `record.mjs`, `capture.mjs`, `speech.mjs`, `compose.py`, `.env.example` and a pinned Playwright dependency. In that recording project, install the dependency and browser when needed:
+The output contains `plan.json`, `record.mjs`, `capture.mjs`, `speech.mjs`, `compose.py`, `preview.py`, `.env.example` and a pinned Playwright dependency. In that recording project, install the dependency and browser when needed:
 
 ```text
 npm install
 npx playwright install chromium
 ```
 
-Write a concise English story in `plan.json`: one scene per useful outcome and short sentences suitable for speech. Adapt `record.mjs` to the actual application. Use stable role/label locators and assertions that verify the intended result. The template deliberately contains no fabricated working feature. Read [the recording contract](references/recording.md) before adapting it.
+Write a concise English story in `plan.json`: one scene per useful outcome and short sentences suitable for speech. Adapt `record.mjs` to the actual application. Use stable role/label locators and assertions that verify the intended result. Click through `pointer.click(locator)` so the recording shows a pointer travelling to each target; browser video does not include the system cursor. The template deliberately contains no fabricated working feature. Read [the recording contract](references/recording.md) before adapting it.
 
 ## Voice, record and compose
 
-Generate narration with the bundled OpenRouter speech helper after the user configures `.env` from `.env.example`, or supply existing audio clips. The helper never prints credentials. Choose a currently available speech model and voice; provider access and costs belong to the user's account. Use another authorized TTS service if appropriate, preserving one clip per sentence. Do not claim narration was generated when only text or silence was produced.
+Narration is one audio clip per sentence, from one of three sources. Pick with the user when it costs money or affects quality:
+
+- **Configured speech service.** After the user fills `.env` from `.env.example`, `node speech.mjs` calls the bundled OpenRouter helper. This is the natural-sounding option and a paid request on the user's account. The helper never prints credentials. Do not look for or reuse a key the user has not configured for this recording.
+- **System voice.** `node speech.mjs --system-voice [NAME]` uses the voices that ship with Windows, macOS or Linux (`espeak-ng`). Free and offline, but more mechanical. Use it for drafts, or as the final only when the user accepts it; name the voice in the disclosure.
+- **Supplied clips.** `node speech.mjs --audio-dir /path/to/clips` imports files named `SCENE-ID-0.mp3`, `SCENE-ID-1.wav`, etc.
+
+Do not claim narration was generated when only text or silence was produced, and do not describe how a voice sounds unless someone has listened to it.
 
 ```text
 node speech.mjs
 node record.mjs
 python compose.py --project .
+python preview.py --project . --start 9 --duration 12
 ```
 
-For existing clips named `SCENE-ID-0.mp3`, `SCENE-ID-1.wav`, etc., run `node speech.mjs --audio-dir /path/to/clips`. For FFmpeg outside PATH, pass `--ffmpeg /path/to/ffmpeg`. For an installed browser outside Playwright's cache, set `CHROMIUM_EXECUTABLE`. The helper records a real browser video, then aligns sentence captions to measured audio durations and assembles the scenes into a 1920×1080 H.264/AAC MP4. Longer interactions remain visible; shorter footage holds its final frame while narration finishes. This is sentence-level synchronization, not word-level forced alignment.
+The helper records a real browser video, then aligns sentence captions to measured audio durations and assembles the scenes into a 1920×1080 H.264/AAC MP4. By default the footage is framed at 1600×900 with the scene title above and captions below, so neither covers the product; set `"layout": "full"` in `plan.json` for edge-to-edge footage. Longer interactions remain visible; shorter footage holds its final frame while narration finishes. This is sentence-level synchronization, not word-level forced alignment. `preview.py` exports a short silent animated WebP or GIF for a README or chat message.
+
+FFmpeg is found from `--ffmpeg`, `DEMO_FFMPEG`, PATH or the `imageio-ffmpeg` package. For an installed browser outside Playwright's cache, set `CHROMIUM_EXECUTABLE`; recording also needs Playwright's own video encoder (`npx playwright install ffmpeg`). Read [the recording contract](references/recording.md) for every option.
 
 If no narration route is available, create a silent **preview** only with `python compose.py --project . --silent-preview`. Clearly label it as a preview; keep the requested narrated final deliverable outstanding.
 
